@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // User profiles — only owner can read/write
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Chat messages — only owner can read/write their messages
+    match /chatMessages/{messageId} {
+      allow read, write: if request.auth != null && resource == null
+        || request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Emotion history — only owner can read/write
+    match /emotionHistory/{recordId} {
+      allow read: if request.auth != null &&
+        resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid;
+    }
+
+    // Alerts — users can create alerts for themselves; 
+    // admins/Cloud Functions can read/update
+    match /alerts/{alertId} {
+      allow create: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid;
+      allow read: if request.auth != null &&
+        resource.data.userId == request.auth.uid;
+    }
+
+    // Telegram links — only owner can read/write
+    match /telegram_links/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
