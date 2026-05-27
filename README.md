@@ -96,3 +96,97 @@ Mental health issues are rising globally, especially among young people. Many do
 ---
 
 ## 🏗️ Architecture
+
+┌──────────────────────────────────────────────────────────────┐ │ USER INTERFACES │ │ ┌──────────┐ ┌──────────────┐ ┌───────────────────────┐ │ │ │ Text Chat│ │ Video Chat │ │ Telegram Bot │ │ │ │ (Web) │ │ (Web+Camera) │ │ (Mobile/Desktop) │ │ │ └────┬─────┘ └──────┬───────┘ └──────────┬────────────┘ │ └───────┼───────────────┼──────────────────────┼───────────────┘ │ │ │ ▼ ▼ ▼ ┌──────────────────────────────────────────────────────────────┐ │ BACKEND PROXY SERVER │ │ (Node.js + Express :3001) │ │ /api/chat (SSE) │ /api/analyze │ /api/send-email │ /health │ └───────┬──────────┴──────┬───────┴────────┬───────────────────┘ │ │ │ ▼ ▼ ▼ ┌──────────────┐ ┌──────────┐ ┌──────────────┐ │ Ollama LLM │ │ Firebase │ │ Gmail SMTP │ │ (Llama 3) │ │ Firestore│ │ (Nodemailer) │ │ :11434 │ │ (Cloud) │ │ │ └──────────────┘ └──────────┘ └──────────────┘
+
+
+---
+## 🚀 Getting Started
+### Prerequisites
+- **Node.js** v18+
+- **Ollama** installed with Llama 3 model (`ollama pull llama3`)
+- **Firebase** project configured
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/jeeni-ai-mental-health-companion.git
+cd jeeni-ai-mental-health-companion
+# Install frontend dependencies
+npm install
+# Install backend dependencies
+cd server
+npm install
+Configure Environment
+Create server/.env:
+
+env
+
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=llama3
+PORT=3001
+# Email (Gmail SMTP — use App Password)
+EMAIL_USER=your@gmail.com
+EMAIL_PASS=xxxx xxxx xxxx xxxx
+# Telegram Bot (optional)
+TELEGRAM_BOT_TOKEN=your_token
+Run
+bash
+
+# Terminal 1: Start Ollama
+ollama serve
+# Terminal 2: Start backend
+cd server && node server.js
+# Terminal 3: Start frontend
+npm run dev
+Open http://localhost:5173 🎉
+
+🚨 Safety & Guardian Alert System
+Detection Pipeline
+
+User Message
+    │
+    ├─→ Direct Keyword Detection (instant, no AI needed)
+    │   • "i want to die", "kill myself", "self-harm", etc.
+    │   • If matched → riskScore = 90, selfHarmFlag = true
+    │
+    ├─→ AI Emotion Analysis (Ollama)
+    │   • Emotional state: happy/sad/angry/fearful/anxious/etc.
+    │   • Risk score 0-100 + self-harm flags
+    │
+    └─→ Combined Risk Assessment
+        • Maximum risk score from both methods
+        • If riskScore ≥ 70 OR selfHarmFlag → TRIGGER GUARDIAN ALERT
+What Guardians Receive
+Risk level and detection type
+Timestamp
+Never includes actual conversation content
+Professionally designed HTML email with emergency resources
+🔒 Privacy & Security
+🧠 Local AI: Ollama runs on YOUR machine — conversations never leave your device
+🔐 Firebase Security Rules: Users can only access their own data
+🛡️ No conversation logging in alerts: Guardian alerts mention risk levels but never include messages
+🔑 Google OAuth 2.0: Secure authentication via Firebase
+📁 Project Structure
+
+jeeni-ai-mental-health-companion/
+├── src/
+│   ├── pages/          # Login, Dashboard, Text Chat, Video Chat, Settings
+│   ├── components/     # Navbar, ChatBubble, VoiceOrb, BreathingExercise, etc.
+│   ├── services/       # AI chat, emotion analysis, guardian alerts, speech
+│   └── contexts/       # Theme & Toast notification providers
+├── server/
+│   ├── server.js       # Express API proxy
+│   └── telegramBot.js  # Telegram bot
+├── firestore.rules     # Security rules
+└── vite.config.js      # Build config + API proxy
+👨‍💻 Creator
+Jeeni was created by Jeevanandham S — driven by a personal mission to make mental health support accessible to everyone. The name "Jeeni" is derived from the creator's name, reflecting that this project comes from the heart. 💜
+
+📄 License
+This project is licensed under the MIT License — see the 
+LICENSE
+ file for details.
+
+If you find this project helpful, please give it a ⭐ — it means the world! 💜
+
+Mental health matters. You are not alone.
